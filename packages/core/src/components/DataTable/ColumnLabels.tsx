@@ -77,7 +77,7 @@ export default function ColumnLabels({
               {...css(styles && styles.row)}
             >
               <span>
-                <Text micro muted>
+                <Text small muted>
                   {label}
                 </Text>
               </span>
