@@ -247,6 +247,7 @@ storiesOf('Core/DataTable', module)
       selectCallback={selectCallback}
       selectable
       expandable
+      selectedRowsFirst
     />
   ))
   .add('A complex table with all features enabled.', () => (
