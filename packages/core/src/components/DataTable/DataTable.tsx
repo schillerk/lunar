@@ -16,6 +16,7 @@ import {
   VirtualRow,
   SelectedRows,
   IndexedChildRow,
+  ExpandedParentRow,
 } from './types';
 import ColumnLabels from './ColumnLabels';
 import TableHeader from './TableHeader';
@@ -493,11 +494,27 @@ export class DataTable extends React.Component<DataTableProps & WithStylesProps,
         (this.shouldRenderTableHeader() ? getHeight(rowHeight, tableHeaderHeight) : 0)
       : this.getTableHeight(expandedData);
 
+    console.log(expandedData);
+    const colData: React.ReactNode[] = [];
+    this.keys.forEach(() => colData.push([]));
+    const rows = expandedData.map((row: ExpandedRow) => {
+      return this.keys.forEach((key: string, keyIdx: number) => {
+        console.log(row.data[key]);
+        colData[keyIdx].push(<div className={cx(styles.newCell)}>{row.data[key]}</div>);
+      });
+    });
+    console.log(colData);
+    const cols = this.keys.map((key: string, keyIdx: number) => (
+      <div className={cx(styles.newCol)}>{colData[keyIdx]}</div>
+    ));
+    const table = <div className={cx(styles.newTable)}>{cols}</div>;
+
     return (
       <>
         {this.shouldRenderTableHeader() && this.renderTableHeader(width!)}
         <div className={cx(styles.table_container, { width })}>
-          <Table
+          {table}
+          {/* <Table
             ref={propagateRef}
             height={tableHeight}
             width={width!}
@@ -516,12 +533,89 @@ export class DataTable extends React.Component<DataTableProps & WithStylesProps,
             {expandable && renderExpandableColumn(cx, styles, expandedRows, this.expandRow)}
             {selectable && renderSelectableColumn(selectedRows, this.handleSelection, expandable)}
             {renderDataColumns(this.keys, editMode, this.onEdit, this.cache, this.props)}
-          </Table>
+          </Table> */}
         </div>
       </>
     );
   }
 }
+
+//   render() {
+//     const {
+//       autoHeight,
+//       data,
+//       dynamicRowHeight,
+//       expandable,
+//       filterData,
+//       propagateRef,
+//       rowHeight,
+//       selectable,
+//       styles,
+//       selectedRowsFirst,
+//       tableHeaderHeight,
+//       cx,
+//       showAllRows,
+//       width,
+//       height,
+//       sortByCacheKey,
+//     } = this.props;
+
+//     const { expandedRows, sortBy, sortDirection, editMode, selectedRows } = this.state;
+
+//     const sortedData: IndexedParentRow[] = this.getData(
+//       data!,
+//       sortBy,
+//       sortDirection,
+//       selectedRows,
+//       sortByCacheKey,
+//     );
+
+//     const filteredData = filterData!(sortedData);
+
+//     const expandedData = expandData(
+//       filteredData,
+//       expandedRows,
+//       selectedRows,
+//       selectedRowsFirst!,
+//       sortBy,
+//       this.keys,
+//       sortDirection,
+//     );
+
+//     const tableHeight = autoHeight
+//       ? (height || 0) -
+//         (this.shouldRenderTableHeader() ? getHeight(rowHeight, tableHeaderHeight) : 0)
+//       : this.getTableHeight(expandedData);
+
+//     return (
+//       <>
+//         {this.shouldRenderTableHeader() && this.renderTableHeader(width!)}
+//         <div className={cx(styles.table_container, { width })}>
+//           <Table
+//             ref={propagateRef}
+//             height={tableHeight}
+//             width={width!}
+//             rowCount={expandedData.length}
+//             rowGetter={this.rowGetter(expandedData)}
+//             sort={this.sort}
+//             sortBy={sortBy}
+//             sortDirection={sortDirection}
+//             headerHeight={this.getColumnHeaderHeight()}
+//             headerRowRenderer={ColumnLabels(this.props)}
+//             rowHeight={dynamicRowHeight ? this.cache.rowHeight : HEIGHT_TO_PX[rowHeight!]}
+//             rowStyle={this.getRowStyle(expandedData)}
+//             overscanRowCount={dynamicRowHeight && showAllRows ? expandedData.length : 2}
+//             onRowClick={this.handleRowClick}
+//           >
+//             {expandable && renderExpandableColumn(cx, styles, expandedRows, this.expandRow)}
+//             {selectable && renderSelectableColumn(selectedRows, this.handleSelection, expandable)}
+//             {renderDataColumns(this.keys, editMode, this.onEdit, this.cache, this.props)}
+//           </Table>
+//         </div>
+//       </>
+//     );
+//   }
+// }
 
 export default withStyles(
   ({ ui }) => ({
@@ -555,6 +649,14 @@ export default withStyles(
     },
     expand_caret: {
       cursor: 'pointer',
+    },
+    // Experimental Styles
+    newTable: {
+      width: '100%',
+      display: 'inline-flex',
+    },
+    newCell: {
+      flexGrow: 1,
     },
   }),
   {
